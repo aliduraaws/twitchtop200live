@@ -10,7 +10,6 @@ let streams = [];
 let currentSort = { column: 'viewer_count', direction: 'desc' };
 const CACHE_KEY = 'twitch_streams_cache';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
-const DEFAULT_PROFILE_IMAGE = 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png'; // Twitch default avatar
 
 async function fetchWithRetry(url, options, retries = 2, backoff = 500) {
   for (let i = 0; i < retries; i++) {
@@ -145,7 +144,7 @@ async function fetchTopStreams(forceCache = false) {
     const batchSize = 50;
     for (let i = 0; i < streams.length; i += batchSize) {
       const batch = streams.slice(i, i + batchSize);
-      console.log(`Fetching followers for batch ${i / batchSize + 1}`);
+      console.log(`Fetching followers for batch ${i / 100 + 1}`);
       const promises = batch.map(async stream => {
         try {
           const url = new URL('https://api.twitch.tv/helix/channels/followers');
@@ -212,8 +211,22 @@ function sortAndRender() {
   tableBody.innerHTML = '';
   sortedStreams.forEach(stream => {
     const row = document.createElement('tr');
+    // Apply color-coding class to Rank column
+    let rankClass = '';
+    if (stream.viewer_rank <= 3) {
+      rankClass = 'rank-top-3';
+    } else if (stream.viewer_rank >= 7 && stream.viewer_rank <= 10) {
+      rankClass = 'rank-7-10';
+    } else if (stream.viewer_rank >= 11 && stream.viewer_rank <= 50) {
+      rankClass = 'rank-11-50';
+    } else if (stream.viewer_rank >= 51 && stream.viewer_rank <= 100) {
+      rankClass = 'rank-51-100';
+    } else {
+      rankClass = 'rank-101-plus';
+    }
+
     row.innerHTML = `
-      <td>${stream.viewer_rank || 'N/A'}</td>
+      <td class="${rankClass}">${stream.viewer_rank || 'N/A'}</td>
       <td title="${stream.user_name}">
         ${stream.profile_image_url ? `<img class="profile-img" src="${stream.profile_image_url}" alt="${stream.user_name}"/>` : ''}
         ${stream.user_name}

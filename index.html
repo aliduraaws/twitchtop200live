@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Top 200 Live Twitch Streams</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
@@ -14,14 +15,14 @@
     <table id="streamers-table">
       <thead>
         <tr>
-          <th data-sort="rank">Rank <span class="sort-arrow"></span></th>
-          <th data-sort="user_name">Streamer <span class="sort-arrow"></span></th>
-          <th data-sort="user_id">User ID <span class="sort-arrow"></span></th>
-          <th data-sort="viewer_count">Viewer Count <span class="sort-arrow"></span></th>
-          <th data-sort="game_name">Game <span class="sort-arrow"></span></th>
-          <th data-sort="followers">Followers <span class="sort-arrow"></span></th>
-          <th data-sort="uptime">Stream Uptime <span class="sort-arrow"></span></th>
-          <th data-sort="user_login">Profile <span class="sort-arrow"></span></th>
+          <th data-sort="rank"><span class="header-content"><i class="fas fa-trophy header-icon" title="Sort by Rank"></i> Rank</span> <span class="sort-arrow"></span></th>
+          <th data-sort="user_name"><span class="header-content"><i class="fas fa-user header-icon" title="Sort by Streamer"></i> Streamer</span> <span class="sort-arrow"></span></th>
+          <th data-sort="user_id"><span class="header-content"><i class="fas fa-hashtag header-icon" title="Sort by User ID"></i> User ID</span> <span class="sort-arrow"></span></th>
+          <th data-sort="viewer_count"><span class="header-content"><i class="fas fa-eye header-icon" title="Sort by Viewer Count"></i> Viewer Count</span> <span class="sort-arrow"></span></th>
+          <th data-sort="game_name"><span class="header-content"><i class="fas fa-gamepad header-icon" title="Sort by Game/Category"></i> Game/Category</span> <span class="sort-arrow"></span></th>
+          <th data-sort="followers"><span class="header-content"><i class="fas fa-users header-icon" title="Sort by Followers"></i> Followers</span> <span class="sort-arrow"></span></th>
+          <th data-sort="uptime"><span class="header-content"><i class="fas fa-clock header-icon" title="Sort by Stream Uptime"></i> Stream Uptime</span> <span class="sort-arrow"></span></th>
+          <th data-sort="user_login"><span class="header-content"><i class="fas fa-link header-icon" title="Sort by Profile"></i> Profile</span> <span class="sort-arrow"></span></th>
         </tr>
       </thead>
       <tbody>
