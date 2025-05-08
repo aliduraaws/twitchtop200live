@@ -4,10 +4,13 @@ const accessToken = '8wq193puwfzavy6m63ltbi96pjfe6x'; // Must be valid Bearer to
 //const accessToken = 'YOUR_ACCESS_TOKEN_HERE'; // Replace with your Twitch Bearer Token
 const tableBody = document.querySelector('#streamers-table tbody');
 const tableHeaders = document.querySelectorAll('#streamers-table th');
+const refreshButton = document.querySelector('#refresh-button');
+const loadingSpinner = document.querySelector('#loading-spinner');
 let streams = [];
 let currentSort = { column: 'viewer_count', direction: 'desc' };
 const CACHE_KEY = 'twitch_streams_cache';
 const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_PROFILE_IMAGE = 'https://static-cdn.jtvnw.net/user-default-pictures-uv/ead5c8b2-a4c9-4724-b1dd-9f00b46cbd3d-profile_image-300x300.png'; // Twitch default avatar
 
 async function fetchWithRetry(url, options, retries = 2, backoff = 500) {
   for (let i = 0; i < retries; i++) {
@@ -58,21 +61,21 @@ function setCachedData(data) {
   localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
 }
 
-async function fetchTopStreams() {
+async function fetchTopStreams(forceCache = false) {
   try {
-    const loadingSpinner = document.createElement('div');
-    loadingSpinner.id = 'loading-spinner';
-    loadingSpinner.innerHTML = 'Loading streams...';
-    tableBody.parentNode.insertBefore(loadingSpinner, tableBody);
-    loadingSpinner.style.display = 'block';
+    // Show spinner
+    if (loadingSpinner) loadingSpinner.style.display = 'block';
     tableBody.innerHTML = '';
 
-    // Optional: Clear cache to reset invalid data (uncomment to force clear)
-    // localStorage.removeItem(CACHE_KEY);
+    // Clear cache if forced
+    if (forceCache) {
+      localStorage.removeItem(CACHE_KEY);
+      console.log('Cache cleared for refresh');
+    }
 
     // Check cache
     const cachedStreams = getCachedData();
-    if (cachedStreams) {
+    if (cachedStreams && !forceCache) {
       streams = cachedStreams;
       sortAndRender();
       return;
@@ -172,7 +175,7 @@ async function fetchTopStreams() {
     console.error('Error fetching streams:', error);
     tableBody.innerHTML = `<tr><td colspan="8">Error loading streams: ${error.message}</td></tr>`;
   } finally {
-    const loadingSpinner = document.getElementById('loading-spinner');
+    // Hide spinner
     if (loadingSpinner) loadingSpinner.style.display = 'none';
   }
 }
@@ -211,7 +214,10 @@ function sortAndRender() {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${stream.viewer_rank || 'N/A'}</td>
-      <td title="${stream.user_name}"><img class="profile-img" src="${stream.profile_image_url || 'default-profile.png'}" alt="${stream.user_name}"/> ${stream.user_name}</td>
+      <td title="${stream.user_name}">
+        ${stream.profile_image_url ? `<img class="profile-img" src="${stream.profile_image_url}" alt="${stream.user_name}"/>` : ''}
+        ${stream.user_name}
+      </td>
       <td>${stream.user_id}</td>
       <td>${stream.viewer_count.toLocaleString()}</td>
       <td>${stream.game_name}</td>
@@ -245,6 +251,11 @@ tableHeaders.forEach(header => {
     }
     sortAndRender();
   });
+});
+
+// Refresh button handler
+refreshButton.addEventListener('click', () => {
+  fetchTopStreams(true); // Force cache clear
 });
 
 fetchTopStreams();
